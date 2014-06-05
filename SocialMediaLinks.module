@@ -1,0 +1,195 @@
+<?php
+/**
+ * @author  WebCreate Lanka - Gayan Virajith
+ * @contact Gayan Virajith <webcreatelk@gmail.com>
+ * @website www.webcreate.lk
+ * @create  2014-07-03
+ * ----------------------------------------------------------------------------------
+ * @licence
+ * Copyright (c) 2014 Webcreate.lk. - Gayan Virajith
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is furnished
+ * to do so, subject to the following conditions: The above copyright notice and
+ * this permission notice shall be included in all copies or substantial portions
+ * of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ----------------------------------------------------------------------------------
+ * Class SocialMediaLinks
+ *
+ * ProcessWire social media links module is used to store social media links
+ * in a configurable manner.
+ *
+ */
+class SocialMediaLinks extends WireData implements Module, ConfigurableModule {
+
+    public static function getModuleInfo() {
+
+        return array(
+            // ---------------------------------
+            // The module title
+            // ---------------------------------
+            'title' => 'Social Media Links Configuration',
+            // ---------------------------------
+            // Version of the module
+            // ---------------------------------
+            'version' => 100,
+            // ---------------------------------
+            // Summary is the brief description of what this module all about
+            // ---------------------------------
+            'summary' => 'Store social media links such as facebook, twitter, etc',
+            // ---------------------------------
+            // Author of this module
+            // ---------------------------------
+            'author' => 'Gayan Virajith',
+            // ---------------------------------
+            // Optional url to more information about the module
+            // ---------------------------------
+            'href'      => 'https://github.com/webcreatelk/SocialMediaLinks',
+            // ---------------------------------
+            // Singular : true is indicating that only one instance of the module is allowed
+            // ---------------------------------
+            'singular'  => true,
+            // ---------------------------------
+            // Auto load : true is indicating that the module should be started with ProcessWire
+            // ---------------------------------
+            'autoload'  => true,
+        );
+    }
+
+    /**
+     * Default data
+     * @return array default values
+     */
+    static public function getDefaultData() {
+        return array(
+            'facebookUrl' => '#',
+            'twitterUrl' => '#',
+            'googlePlusUrl' => '#',
+            'flickrUrl' => '#',
+            'linkedInUrl' => '#',
+        );
+    }
+
+    /**
+     * Constructor
+     * init default data as instance variables
+     */
+    public function __construct() {
+        foreach(self::getDefaultData() as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    /**
+     * Initializations
+     */
+    public function init() {
+        // ---------------------------------
+        // add a 'socialLinks' property to every page the returns currency
+        // ---------------------------------
+        $this->addHookProperty('Page::socialLinks', $this, 'getSocialMediaLinks');
+    }
+
+    /**
+     * getSocialMediaLinks() adds a 'socialLinks' property (not method)
+     * to every page that returns "html markup of social media links"
+     *
+     * @param $event - String of html markup
+     */
+    public function getSocialMediaLinks($event) {
+
+        // ---------------------------------
+        // Markup social media links with font-awesome icons
+        // ---------------------------------
+        $out = "<ul class='social-link-set'>
+                    <li><a href='{$this->facebookUrl}' target='_blank'><i class='fa fa-fw fa-facebook'></i></a></li>
+                    <li><a href='{$this->twitterUrl}' target='_blank'><i class='fa fa-fw fa-twitter'></i></a></li>
+                    <li><a href='{$this->googlePlusUrl}' target='_blank'><i class='fa fa-fw fa-google-plus'></i></a></li>
+                    <li><a href='{$this->flickrUrl}' target='_blank'><i class='fa fa-fw fa-flickr'></i></a></li>
+                    <li><a href='{$this->linkedInUrl}' target='_blank'><i class='fa fa-fw fa-linkedin'></i></a></li>
+                </ul>";
+
+        // ---------------------------------
+        // Returns the string
+        // ---------------------------------
+        $event->return = $out;
+    }
+
+    /**
+     * Add module configuration fields
+     *
+     * @param array $data
+     * @return InputfieldsWrapper|InputfieldWrapper
+     */
+    public static function getModuleConfigInputfields(array $data) {
+        $inputfields = new InputfieldWrapper();
+
+        // ---------------------------------
+        // ask facebook URL
+        // ---------------------------------
+        $field = wire('modules')->get('InputfieldURL');
+        $field->name = 'facebookUrl';
+        $field->label = "Facebook URL";
+        $field->description = __('Optional field.eg http://www.facebook.com/yourpage');
+
+        if(isset($data['facebookUrl'])) $field->value = $data['facebookUrl'];
+        $inputfields->add($field);
+
+
+        // ---------------------------------
+        // ask twitter URL
+        // ---------------------------------
+        $field = wire('modules')->get('InputfieldURL');
+        $field->name = 'twitterUrl';
+        $field->label = "Twitter URL";
+        $field->description = __('Optional field.eg http://www.twitter.com/username');
+
+        if(isset($data['twitterUrl'])) $field->value = $data['twitterUrl'];
+        $inputfields->add($field);
+
+        // ---------------------------------
+        // ask google plus URL
+        // ---------------------------------
+        $field = wire('modules')->get('InputfieldURL');
+        $field->name = 'googlePlusUrl';
+        $field->label = "Google plus URL";
+        $field->description = __('Optional field.eg http://www.plus.google.com/username');
+
+        if(isset($data['googlePlusUrl'])) $field->value = $data['googlePlusUrl'];
+        $inputfields->add($field);
+
+        // ---------------------------------
+        // ask flickr URL
+        // ---------------------------------
+        $field = wire('modules')->get('InputfieldURL');
+        $field->name = 'flickrUrl';
+        $field->label = "flickr URL";
+        $field->description = __('Optional field.eg http://www.flickr.com/username');
+
+        if(isset($data['flickrUrl'])) $field->value = $data['flickrUrl'];
+        $inputfields->add($field);
+
+        // ---------------------------------
+        // ask linkedIn URL
+        // ---------------------------------
+        $field = wire('modules')->get('InputfieldURL');
+        $field->name = 'linkedInUrl';
+        $field->label = "LinkedIn URL";
+        $field->description = __('Optional field.eg http://www.linkedin.com/username');
+
+        if(isset($data['linkedInUrl'])) $field->value = $data['linkedInUrl'];
+        $inputfields->add($field);
+
+        return $inputfields;
+    }
+
+}
